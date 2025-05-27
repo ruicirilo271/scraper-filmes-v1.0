@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Filmes Favoritos - MegafilmesHDZ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="/">MegafilmesHDZ</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu"
+                aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navMenu">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link" href="/">Filmes</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/favoritos">Favoritos</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <h2>Seus Filmes Favoritos</h2>
+    <div id="favoritos-list" class="row row-cols-1 row-cols-md-4 g-4 mt-3"></div>
+    <p id="sem-favoritos" class="text-center mt-3" style="display:none;">Você não tem filmes favoritos.</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+function carregarFavoritos() {
+    let favoritos = JSON.parse(localStorage.getItem('favoritos') || '[]');
+    const container = document.getElementById('favoritos-list');
+    const semFav = document.getElementById('sem-favoritos');
+    container.innerHTML = '';
+
+    if (favoritos.length === 0) {
+        semFav.style.display = 'block';
+        return;
+    } else {
+        semFav.style.display = 'none';
+    }
+
+    favoritos.forEach(filme => {
+        const titulo = filme.titulo || 'Sem título';
+        const capa = filme.capa || '';
+        const url = filme.url || '';
+
+        const col = document.createElement('div');
+        col.className = 'col d-flex';
+
+        col.innerHTML = `
+            <div class="card flex-fill h-100">
+                ${capa ? `<img src="${capa}" class="card-img-top" alt="${titulo}">` : ''}
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">${titulo}</h5>
+                    ${url ? `<a href="${url}" target="_blank" class="btn btn-primary mb-2">Assistir</a>` : ''}
+                    <button class="btn btn-danger mt-auto" onclick="removerFavorito('${titulo.replace(/'/g,"\\'")}')">Remover Favorito</button>
+                </div>
+            </div>
+        `;
+        container.appendChild(col);
+    });
+}
+
+function removerFavorito(titulo) {
+    let favoritos = JSON.parse(localStorage.getItem('favoritos') || '[]');
+    favoritos = favoritos.filter(f => f.titulo !== titulo);
+    localStorage.setItem('favoritos', JSON.stringify(favoritos));
+    carregarFavoritos();
+}
+
+window.onload = carregarFavoritos;
+</script>
+</body>
+</html>
+
